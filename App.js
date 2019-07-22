@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TextInput, SafeAreaView } from 'react-native';
+import { Button, StyleSheet, Text, View, TextInput, SafeAreaView } from 'react-native';
 
 export default class App extends Component {
+
   constructor(props) {
     super(props);
+    const rate = 2.5;
     this.state = {
       firstCurrencyFieldText: '',
       sercondCurrencyFieldText: ''
@@ -12,10 +14,20 @@ export default class App extends Component {
 
   processInputFromFirstField = (text)=>{
     this.setState({firstCurrencyFieldText: text})
+    this.setState({secondCurrencyFieldText: text})
   }
 
   processInputFromSecondField = (text)=>{
     this.setState({secondCurrencyFieldText: text})
+    this.setState({firstCurrencyFieldText: text})
+  }
+
+  getNumberFromString = (string, lang)=>{
+    return 0;
+  }
+
+  getStringFromNumber = (number, lang)=>{
+    return '0';
   }
 
 
@@ -29,6 +41,7 @@ export default class App extends Component {
             onChangeText={this.processInputFromFirstField}
             value={this.state.firstCurrencyFieldText}
           />
+          <Text style={styles.welcome}>{'<--->'}</Text>
           <TextInput
             style={styles.textInput}
             onChangeText={this.processInputFromSecondField}
@@ -48,22 +61,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   currencyView: {
-    flex: 1,
+    //flex: 1,
+    width: '95%',
+    height: '10%',
     flexDirection:'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     borderColor: '#000',
     borderWidth: 3
-    //backgroundColor: '#F5FCFF',
   },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
+    color: 'blue',
     margin: 10,
   },
   textInput: {
-    height: 30, 
-    borderColor: 'gray', 
-    borderWidth: 1
+    margin: 15,
+    height: 40, 
+    width: 100,
+    borderBottomWidth: 2,
+    borderBottomColor: 'gray'
   }
 });
