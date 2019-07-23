@@ -12,22 +12,72 @@ export default class App extends Component {
     };
   }
 
-  processInputFromFirstField = (text)=>{
-    this.setState({firstCurrencyFieldText: text})
-    this.setState({secondCurrencyFieldText: text})
+  processInputFromFirstField = (text) => {
+    this.setState({ firstCurrencyFieldText: text })
+    //this.setState({secondCurrencyFieldText: text})
+    //this.formatString(text, 'en');
+    var r = this.getNumberFromString(text);
+    var rr = this.getStringFromNumber(r, 'en');
+    this.setState({secondCurrencyFieldText: r.toString()})
   }
 
-  processInputFromSecondField = (text)=>{
-    this.setState({secondCurrencyFieldText: text})
-    this.setState({firstCurrencyFieldText: text})
+  processInputFromSecondField = (text) => {
+    this.setState({ secondCurrencyFieldText: text })
+    this.setState({ firstCurrencyFieldText: text })
   }
 
-  getNumberFromString = (string, lang)=>{
-    return 0;
+  getNumberFromString = (str) => {
+    let res = 0;
+    let intPart = '';
+    let fractPart = '';
+    if (str.includes('.')) {
+      let pos = str.indexOf('.');
+      intPart = str.slice(0, pos).replace(/[,' ']/g, '');
+      fractPart = '.'+ str.replace(/[,.' ']/g, '').slice(pos, pos + 3);
+    } else {
+      intPart = str.replace(/[,.' ']/g, '');
+    }
+    res = parseFloat(intPart + fractPart);
+    return res ? res : 0 ;
   }
 
-  getStringFromNumber = (number, lang)=>{
-    return '0';
+  getStringFromNumber = (num, lang) => {
+    let str = num.toString();
+    let intPart = '';
+    let fractPart = '';
+    if (str.includes('.')) {
+      var pos = str.indexOf('.');
+      intPart = str.slice(0, pos);
+      fractPart = str.slice(pos, pos + 3);
+      let pattern = this.getRegexPattern(intPart.length, lang);
+
+      intPart = intPart.replace(new RegExp(pattern[0]), pattern[1]);
+      intPart = intPart[0] === (',' || ' ') ? intPart.slice(1) : intPart;
+      str = intPart + fractPart;
+    } else {
+      let pattern = this.getRegexPattern(str.length, lang);
+
+      intPart = str.replace(new RegExp(pattern[0]), pattern[1]);
+      intPart = intPart[0] === (',' || ' ') ? intPart.slice(1) : intPart;
+      str = intPart + fractPart;
+    }
+    return str;
+    //var str = str.replace(/[,' ']/g,'');
+    //var newstr = str.replace('/([0-9]{1,3})([0-9]{3})([0-9]{1,2})/', "$1 $2.$3");
+    // var newstr = str.replace(/([0-9]{1,3})([0-9]{3})/, "$1 $2");
+    // this.setState({secondCurrencyFieldText: newstr})
+    //return 0;
+  }
+
+  getRegexPattern = (number, lang) => {
+    let pat1 = ['([0-9]{0,3})'];
+    let pat2 = ['$1', '$2'];
+    for (let i = 1; i < Math.floor(number / 3); i++) {
+      pat1.push('([0-9]{3})');
+      pat2.push(`$${i + 2}`);
+    };
+    pat1.push('([0-9]{3})');
+    return [pat1.join(''), pat2.join(lang === 'en' ? ',' : ' ')];
   }
 
 
@@ -61,10 +111,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   currencyView: {
-    //flex: 1,
     width: '95%',
     height: '10%',
-    flexDirection:'row',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     borderColor: '#000',
     borderWidth: 3
@@ -77,7 +126,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     margin: 15,
-    height: 40, 
+    height: 40,
     width: 100,
     borderBottomWidth: 2,
     borderBottomColor: 'gray'
